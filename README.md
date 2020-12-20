@@ -1,4 +1,4 @@
-# Deploy Springboot microservices on Amazon ECS using Amazon ECR & AWS Fargate
+# Deploy Springboot microservices on Amazon ECS using ECR & Fargate
 
 
 ## Tools
