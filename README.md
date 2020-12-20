@@ -36,7 +36,7 @@ Amazon ECS eliminates the need to install and operate your own container orchest
 
 With the AWS Fargate compute engine, you no longer have to provision, configure, and scale clusters of virtual machines to run containers, choose server types, decide when to scale your clusters, or optimize cluster packing.  
 
-- #### Dockerfile
+- #### Docker
 
 Docker is a software platform that allows you to build, test, and deploy applications quickly. Docker packages software into standardized units called containers that have everything the software needs to run, including libraries, system tools, code, and runtime. 
 
