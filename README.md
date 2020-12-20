@@ -1,6 +1,7 @@
 ## Deploy Springboot microservices on Amazon ECS using ECR & Fargate
+<br/>
+<p align="center"><img src="assets/aws.jpg" height="320" width="640"></p>
 
-<img src="assets/aws.jpg" align="center" height="320" width="640">
 
 ### Tools
 1. Spring Tool Suite(STS)/ Eclipse/ VScode
@@ -18,6 +19,8 @@
 - Create a ECR repo in AWS, publishing Docker image using maven goals.
 - Create a AWS ECS cluster for hello-world application using CloudFormation template.
 - Automate the CloudFormation deployment using shell scrip & AWS CLI.
+
+![Image of Process flow](assets/codecommit.png)
 
 ### Target Architecture
 
