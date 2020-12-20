@@ -3,9 +3,11 @@
 
 ## Tools
 1. Spring Tool Suite(STS)/ Eclipse/ VScode
-2. Java 8 or above
-3. Docker
-4. AWS CLI 2
+2. Java 8 or greater
+3. Maven 3.5
+4. Docker
+5. AWS account
+6. AWS Command Line Interface (CLI)
 
 ## Steps 
 - Create a basic hello-world springboot application.
