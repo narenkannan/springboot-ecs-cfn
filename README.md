@@ -12,6 +12,9 @@
 6. AWS Command Line Interface (CLI)
 
 ### Steps 
+
+![Image of Process flow](assets/codecommit.png)
+
 - Create a basic hello-world springboot application.
 - Enable springboot actuator for health check.
 - Write a simple Dockerfile to create hello-world Docker image.
@@ -20,11 +23,9 @@
 - Create a AWS ECS cluster for hello-world application using CloudFormation template.
 - Automate the CloudFormation deployment using shell scrip & AWS CLI.
 
-![Image of Process flow](assets/codecommit.png)
-
 ### Target Architecture
 
-![Image of Target Architecture](https://github.com/narenkannan/springboot-ecs-cfn/blob/develop/assets/target-arch.png)
+![Image of Target Architecture](assets/target-arch.png)
 
 ### Amazon ECS & Farget
 
