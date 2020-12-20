@@ -18,4 +18,4 @@
 
 ## Target Architecture
 
-
+![Image of Target Architecture](https://github.com/narenkannan/springboot-ecs-cfn/assets/target-arch.png)
