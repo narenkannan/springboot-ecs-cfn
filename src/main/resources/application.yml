@@ -1,0 +1,4 @@
+message: 'hello-world !!!'
+management:
+  server:
+    port: 8081

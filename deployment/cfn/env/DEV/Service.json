@@ -1,0 +1,4 @@
+{
+  "Environment": "${app_environment}",
+  "SubnetList": "subnet-a9e174d2, subnet-5f682b13, subnet-d49381bc"
+}

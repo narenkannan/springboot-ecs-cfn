@@ -1,0 +1,217 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This stack creates HELLO WORLD ECS cluster
+Parameters:
+  AppName:
+    Type: String
+    Default: 'hello-world-cfn'
+    Description: Platform Name
+  SubnetList:
+    Type: List<AWS::EC2::Subnet::Id>
+    Default: 'subnet-a9e174d2, subnet-5f682b13, subnet-d49381bc'
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Default: 'vpc-24b2464f'
+  Version:
+    Type: String
+    Default: '0.0.1-SNAPSHOT'
+    Description: Docker Image Version
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub ${AppName}-cluster
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/ECS/${AppName}'
+      RetentionInDays: 7
+  # When HW client container comes up, it will register in this target group
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AppName}-task-exec-role
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ecs-tasks.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+  # IAM role to give the service's containers if the code within needs to access other AWS resources
+  # like ECS tasks, S3 buckets etc
+  ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AppName}-task-role
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: 'Allow'
+          Principal:
+            Service: [ecs-tasks.amazonaws.com]
+          Action: ['sts:AssumeRole']
+  # Service is a resource which allows to run multiple copies of a type of task, and gather up their logs and metrics,
+  # as well as monitor the number of running tasks and replace any that have crashed
+  ECSService:
+    Type: AWS::ECS::Service
+    DependsOn:
+    - LoadBalancer
+    - Listener
+    - DefaultTargetGroup
+    - TargetGroup
+    Properties:
+      ServiceName: !Sub ${AppName}-service
+      Cluster: !Ref ECSCluster
+      LaunchType: FARGATE
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
+      DesiredCount: 2
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - !Ref ContainerSecurityGroup
+          Subnets: !Ref SubnetList
+      TaskDefinition: !Ref TaskDefinition
+      LoadBalancers:
+      - ContainerName: !Sub ${AppName}-container
+        ContainerPort: 8080
+        TargetGroupArn: !Ref TargetGroup
+  # Metadata description of what message container to run and what resource requirements it has
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AppName}-td
+      Cpu: 512
+      Memory: 1024
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+      ExecutionRoleArn: !Ref ECSTaskExecutionRole
+      TaskRoleArn: !Ref ECSTaskRole
+      ContainerDefinitions:
+      - Name: !Sub ${AppName}-container
+        Cpu: 512
+        Memory: 1024
+        Image: !Sub '429310569127.dkr.ecr.ap-south-1.amazonaws.com/hello-world:${Version}'
+        PortMappings:
+          - ContainerPort: 8080
+          - ContainerPort: 8081
+        Environment:
+          - Name: message
+            Value: 'hello cfn world !!!'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Ref LogGroup
+            awslogs-region: !Ref AWS::Region
+            awslogs-stream-prefix: ecs
+  # Load balancer security group
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${AppName}-alb-sg
+      GroupDescription: Access to the public facing load balancer
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        # Allow access to ALB from anywhere on the internet
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: '0.0.0.0/0'
+          Description: Allow HTTP
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIpv6: '::/0'
+          Description: Allow HTTP
+  # Container security group
+  ContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${AppName}-container-sg
+      GroupDescription: Access to the container
+      VpcId: !Ref VpcId
+  # Allow traffic from load balancer into container
+  SecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from the public Load balancer
+      GroupId: !Ref ContainerSecurityGroup
+      IpProtocol: tcp
+      FromPort: 8080
+      ToPort: 8081
+      SourceSecurityGroupId: !Ref ALBSecurityGroup
+  # Application load balancer for getting traffic to containers
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn:
+      - TargetGroup
+      - DefaultTargetGroup
+    Properties:
+      Name: !Sub ${AppName}-alb
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '60'
+      Subnets: !Ref SubnetList
+      SecurityGroups: 
+        - !Ref ALBSecurityGroup
+  # This target group is used to setup the ALB to just drop traffic initially, before any real service target groups have been added
+  DefaultTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub ${AppName}-alb-default-tg
+      HealthCheckIntervalSeconds: 150
+      HealthCheckPath: /actuator/health
+      HealthCheckPort: 8081
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 120
+      HealthyThresholdCount: 2
+      TargetType: ip
+      Port: 8080
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref VpcId
+  # When container comes up, it will register in this target group
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub ${AppName}-tg
+      HealthCheckIntervalSeconds: 150
+      HealthCheckPath: /actuator/health
+      HealthCheckPort: 8081
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 120
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      TargetType: ip
+      Port: 8080
+      Protocol: HTTP
+      VpcId: !Ref VpcId
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - TargetGroupArn: !Ref DefaultTargetGroup
+        Type: forward
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule 
+    Properties:
+      Actions:
+      - TargetGroupArn: !Ref TargetGroup
+        Type: 'forward'
+      Conditions:
+      - Field: path-pattern
+        Values: ['*']
+      ListenerArn: !Ref Listener
+      Priority: 1
+Outputs:
+  ALBUrl:
+    Description: The url of the load balancer
+    Value: !Join ['', ['http://', !GetAtt LoadBalancer.DNSName]]

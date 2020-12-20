@@ -1,0 +1,14 @@
+{
+  "stacks": [
+    {
+      "groupName": "service",
+      "groupStacks": [
+        {
+          "stackName": "${app_environment}-${app_name}-SERVICE",
+          "templateFile": "${cfn_dir}/service.yml",
+          "paramFile": "${cfn_dir}/env/${app_environment}/Service.json"
+        }
+      ]
+    }
+  ]
+}
