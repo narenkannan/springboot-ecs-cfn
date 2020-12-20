@@ -1,5 +1,4 @@
-# springboot-ecs-cfn
-A basic Springboot, ECS application using Cloudformation template
+# Deploy Java Springboot microservices on Amazon ECS using Amazon ECR and AWS Fargate
 
 
 ## Tools
