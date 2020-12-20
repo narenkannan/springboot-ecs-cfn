@@ -30,7 +30,7 @@ AWS Fargate is a compute engine for Amazon ECS that allows you to run containers
 
 - #### Amazon ECS 
 
-Amazon ECS eliminates the need to install and operate your own container orchestration software, manage and scale a cluster of virtual machines, or schedule containers on those virtual machines. 
+Amazon ECS eliminates the need to install and operate your own container orchestration software, manage and scale a cluster of virtual machines, or schedule containers on those virtual machines.
 
 - #### AWS Fargate
 
@@ -39,3 +39,7 @@ With the AWS Fargate compute engine, you no longer have to provision, configure,
 - #### Dockerfile
 
 Docker is a software platform that allows you to build, test, and deploy applications quickly. Docker packages software into standardized units called containers that have everything the software needs to run, including libraries, system tools, code, and runtime. 
+
+- #### AWS Cloud​Formation
+
+![Image of Cloudformation](https://d1.awsstatic.com/Products/product-name/diagrams/product-page-diagram_CloudFormation.ad3a4c93b4fdd3366da3da0de4fb084d89a5d761.png)
