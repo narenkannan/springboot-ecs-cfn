@@ -1,5 +1,6 @@
 ## Deploy Springboot microservices on Amazon ECS using ECR & Fargate
 
+<img src="assets/aws.jpg" align="center" height="320" width="640">
 
 ### Tools
 1. Spring Tool Suite(STS)/ Eclipse/ VScode
