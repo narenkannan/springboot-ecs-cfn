@@ -17,10 +17,13 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 	}
 	
-	@GetMapping
-	public String helloWorld() {
+	@GetMapping("/hello")
+	public String sayHello() {
 		return message;
 	}
 	
-
+	@GetMapping("/welcome")
+	public String sayWelcome() {
+		return message;
+	}
 }
