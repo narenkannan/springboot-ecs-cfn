@@ -7,7 +7,7 @@ Parameters:
     Description: Platform Name
   SubnetList:
     Type: List<AWS::EC2::Subnet::Id>
-    Default: 'subnet-a9e174d2, subnet-5f682b13, subnet-d49381bc'
+    AllowedValues: ['subnet-a9e174d2', 'subnet-5f682b13', 'subnet-d49381bc']
   VpcId:
     Type: AWS::EC2::VPC::Id
     Default: 'vpc-24b2464f'
