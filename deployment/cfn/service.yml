@@ -280,7 +280,7 @@ Resources:
         Type: 'forward'
       Conditions:
       - Field: path-pattern
-        Values: ['/hello/*']
+        Values: ['/hello/']
       ListenerArn: !Ref Listener
       Priority: 1
   WelcomeListenerRule:
@@ -291,7 +291,7 @@ Resources:
         Type: 'forward'
       Conditions:
       - Field: path-pattern
-        Values: ['/welcome/*']
+        Values: ['/welcome/']
       ListenerArn: !Ref Listener
       Priority: 2    
 Outputs:
