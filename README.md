@@ -11,6 +11,11 @@
 5. AWS account
 6. AWS Command Line Interface (CLI)
 
+### Follow links:
+
+* Install AWS CLI 2 : https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
+* Configure AWS CLI : https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.htm
+
 ### Steps 
 
 ![Image of Process flow](assets/codecommit.png)
@@ -22,6 +27,7 @@
 - Create a ECR repo in AWS, publishing Docker image using maven goals.
 - Create a AWS ECS cluster for hello-world application using CloudFormation template.
 - Automate the CloudFormation deployment using shell scrip & AWS CLI.
+  
 
 ### Target Architecture
 
